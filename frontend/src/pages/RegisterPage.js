@@ -8,7 +8,7 @@ import { ChefHat } from 'lucide-react';
 const inputStyle = { width: '100%', background: '#0f0500', border: '1px solid #ff6b0033', borderRadius: '12px', padding: '12px 14px', color: '#ffcca0', outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box' };
 const labelStyle = { color: '#ffcca0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '8px' };
 
-export function RegisterPage() {
+export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', address: '' });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
