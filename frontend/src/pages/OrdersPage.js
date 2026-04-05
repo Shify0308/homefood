@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Package, Clock } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const STATUS_COLORS = {
   placed: '#f59e0b', confirmed: '#3b82f6', preparing: '#8b5cf6',
@@ -15,9 +16,22 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useEffect(() => { fetchOrders(); }, []);
+
+  const fetchOrders = () => {
     axios.get('/api/orders/my-orders').then(r => { setOrders(r.data); setLoading(false); });
-  }, []);
+  };
+
+  const cancelOrder = async (orderId) => {
+    if (!window.confirm('Cancel this order?')) return;
+    try {
+      await axios.put(`/api/orders/${orderId}/cancel`);
+      toast.success('Order cancelled!');
+      fetchOrders();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Cannot cancel order');
+    }
+  };
 
   if (loading) return <div style={{ background: '#0f0500', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ color: '#ff9500' }}>Loading orders...</div></div>;
 
@@ -38,15 +52,23 @@ export default function OrdersPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
                 <div style={{ color: '#ff9500aa', fontSize: '0.8rem', marginBottom: '4px' }}>Order #{order._id.slice(-8).toUpperCase()}</div>
-                <div style={{ color: '#ffcca077', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={12} />{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                <div style={{ color: '#ffcca077', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Clock size={12} />{new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={{ background: STATUS_COLORS[order.orderStatus] + '22', border: `1px solid ${STATUS_COLORS[order.orderStatus]}44`, color: STATUS_COLORS[order.orderStatus], fontSize: '0.8rem', padding: '4px 12px', borderRadius: '20px', fontWeight: 600 }}>
                   {STATUS_LABELS[order.orderStatus]}
                 </span>
                 <span style={{ background: order.paymentStatus === 'paid' ? '#22c55e22' : '#f59e0b22', border: `1px solid ${order.paymentStatus === 'paid' ? '#22c55e44' : '#f59e0b44'}`, color: order.paymentStatus === 'paid' ? '#22c55e' : '#f59e0b', fontSize: '0.75rem', padding: '4px 10px', borderRadius: '20px' }}>
-                  {order.paymentMethod === 'cod' ? 'COD' : 'Paid'} 
+                  {order.paymentMethod === 'cod' ? 'COD' : 'Paid'}
                 </span>
+                {order.orderStatus === 'placed' && (
+                  <button onClick={() => cancelOrder(order._id)}
+                    style={{ background: '#ef444422', border: '1px solid #ef444444', borderRadius: '20px', padding: '4px 12px', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem' }}>
+                    ❌ Cancel
+                  </button>
+                )}
               </div>
             </div>
             {order.items.map((item, i) => (
