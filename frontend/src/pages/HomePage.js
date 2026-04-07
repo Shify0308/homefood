@@ -2,26 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import FoodCard from '../components/FoodCard';
-import { ChefHat, Star, Truck, Shield, Search, ArrowRight, Bot } from 'lucide-react';
+import { ChefHat, Star, Truck, Search, ArrowRight, Bot } from 'lucide-react';
 
 export default function HomePage() {
   const [foods, setFoods] = useState([]);
   const [chefs, setChefs] = useState([]);
+  const [bakers, setBakers] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     try {
-      const [foodsRes, chefsRes] = await Promise.all([
+      const [foodsRes, chefsRes, bakersRes] = await Promise.all([
         axios.get('/api/foods?sort=rating&limit=8'),
-        axios.get('/api/foods/sellers/chefs')
+        axios.get('/api/foods/sellers/chefs'),
+        axios.get('/api/foods/sellers/bakers')
       ]);
       setFoods(foodsRes.data.slice(0, 8));
       setChefs(chefsRes.data.slice(0, 6));
+      setBakers(bakersRes.data.slice(0, 6));
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
   };
@@ -39,12 +40,11 @@ export default function HomePage() {
 
   return (
     <div style={{ background: '#0f0500', minHeight: '100vh' }}>
+
       {/* Hero */}
       <section style={{ background: 'linear-gradient(135deg, #0f0500 0%, #1e0a00 50%, #0f0500 100%)', position: 'relative', overflow: 'hidden' }} className="py-20 px-4">
-        {/* Decorative circles */}
         <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '400px', height: '400px', background: 'radial-gradient(circle, #ff6b0015, transparent)', borderRadius: '50%' }} />
         <div style={{ position: 'absolute', bottom: '-50px', left: '-50px', width: '300px', height: '300px', background: 'radial-gradient(circle, #ff950010, transparent)', borderRadius: '50%' }} />
-
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <div style={{ display: 'inline-block', background: '#ff6b0015', border: '1px solid #ff6b0033', borderRadius: '50px', padding: '6px 16px', marginBottom: '24px' }}>
             <span style={{ color: '#ff9500', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.1em' }}>🏠 ORDER FROM HOME CHEFS & BAKERS</span>
@@ -58,23 +58,16 @@ export default function HomePage() {
           <p style={{ color: '#ffcca077', fontSize: '1.1rem', marginBottom: '40px', maxWidth: '600px', margin: '0 auto 40px' }}>
             Connect with talented home chefs and bakers in your city. Fresh, authentic, made with love.
           </p>
-
-          {/* Search bar */}
           <div style={{ display: 'flex', gap: '12px', maxWidth: '600px', margin: '0 auto 48px', background: '#1e0a00', border: '1px solid #ff6b0033', borderRadius: '16px', padding: '8px 8px 8px 20px' }}>
             <Search size={20} color="#ff9500" style={{ alignSelf: 'center', flexShrink: 0 }} />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
+            <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search biryani, cakes, snacks..."
               style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#ffcca0', fontSize: '1rem' }}
-              onKeyDown={e => e.key === 'Enter' && window.location.assign(`/foods?search=${search}`)}
-            />
+              onKeyDown={e => e.key === 'Enter' && window.location.assign(`/foods?search=${search}`)} />
             <Link to={`/foods?search=${search}`} style={{ background: 'linear-gradient(135deg, #ff6b00, #ff9500)', borderRadius: '10px', padding: '10px 24px', color: 'white', fontWeight: 600, textDecoration: 'none', whiteSpace: 'nowrap' }}>
               Search
             </Link>
           </div>
-
-          {/* Stats */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '48px', flexWrap: 'wrap' }}>
             {[['500+', 'Home Chefs'], ['1000+', 'Dishes'], ['50K+', 'Happy Customers'], ['4.8★', 'Avg Rating']].map(([num, label]) => (
               <div key={label} className="text-center">
@@ -143,23 +136,16 @@ export default function HomePage() {
               <div style={{ background: '#ff6b0022', width: '60px', height: '60px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
                 <Bot size={32} color="#ff9500" />
               </div>
-              <h2 style={{ color: '#fff5e6', fontFamily: "'Georgia', serif", fontSize: '1.6rem', fontWeight: 700, marginBottom: '12px' }}>
-                AI Food Assistant 🤖
-              </h2>
+              <h2 style={{ color: '#fff5e6', fontFamily: "'Georgia', serif", fontSize: '1.6rem', fontWeight: 700, marginBottom: '12px' }}>AI Food Assistant 🤖</h2>
               <p style={{ color: '#ffcca077', marginBottom: '24px', lineHeight: 1.6 }}>
-                Ask our AI anything — "Best biryani under ₹200", "Fastest home chef near me", "Top rated baker for wedding cakes". Get instant, personalized recommendations.
+                Ask our AI anything — "Best biryani under ₹200", "Fastest home chef near me", "Top rated baker for wedding cakes".
               </p>
               <Link to="/ai-chat" style={{ background: 'linear-gradient(135deg, #ff6b00, #ff9500)', padding: '12px 28px', borderRadius: '12px', color: 'white', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                 <Bot size={18} /> Try AI Assistant
               </Link>
             </div>
             <div style={{ flex: 1, minWidth: '240px' }}>
-              {[
-                '"Which chef has best biryani?"',
-                '"Cheapest cake under ₹500?"',
-                '"Fastest delivery home chef?"',
-                '"Top rated home baker today?"'
-              ].map((q, i) => (
+              {['"Which chef has best biryani?"', '"Cheapest cake under ₹500?"', '"Fastest delivery home chef?"', '"Top rated home baker today?"'].map((q, i) => (
                 <div key={i} style={{ background: '#0f0500', border: '1px solid #ff6b0022', borderRadius: '12px', padding: '12px 16px', marginBottom: '10px', color: '#ffcca0', fontSize: '0.9rem' }}>
                   💬 {q}
                 </div>
@@ -169,7 +155,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Top Chefs */}
+      {/* Top Home Chefs */}
       {chefs.length > 0 && (
         <section className="py-16 px-4" style={{ background: '#0a0300' }}>
           <div className="max-w-7xl mx-auto">
@@ -178,7 +164,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {chefs.map(chef => (
                 <Link key={chef._id} to={`/foods?seller=${chef._id}`} style={{ textDecoration: 'none', textAlign: 'center' }}>
-                  <div style={{ background: '#1e0a00', border: '1px solid #ff6b0022', borderRadius: '16px', padding: '20px 12px', transition: 'all 0.3s' }} className="hover:-translate-y-1 hover:border-orange-500/40">
+                  <div style={{ background: '#1e0a00', border: '1px solid #ff6b0022', borderRadius: '16px', padding: '20px 12px', transition: 'all 0.3s' }} className="hover:-translate-y-1">
                     <div style={{ width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 12px', border: '2px solid #ff6b0044' }}>
                       <img src={chef.profileImage || `https://ui-avatars.com/api/?name=${chef.businessName}&background=ff6b00&color=fff`} alt={chef.businessName} className="w-full h-full object-cover" />
                     </div>
@@ -193,8 +179,32 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* Top Home Bakers */}
+      {bakers.length > 0 && (
+        <section className="py-16 px-4">
+          <div className="max-w-7xl mx-auto">
+            <h2 style={{ color: '#fff5e6', fontFamily: "'Georgia', serif", fontSize: '1.8rem', fontWeight: 700, marginBottom: '8px', textAlign: 'center' }}>Top Home Bakers</h2>
+            <p style={{ color: '#ff9500aa', textAlign: 'center', marginBottom: '40px' }}>Verified home bakers in your city</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {bakers.map(baker => (
+                <Link key={baker._id} to={`/foods?seller=${baker._id}`} style={{ textDecoration: 'none', textAlign: 'center' }}>
+                  <div style={{ background: '#1e0a00', border: '1px solid #ff950033', borderRadius: '16px', padding: '20px 12px', transition: 'all 0.3s' }} className="hover:-translate-y-1">
+                    <div style={{ width: '64px', height: '64px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 12px', border: '2px solid #ff950044' }}>
+                      <img src={baker.profileImage || `https://ui-avatars.com/api/?name=${baker.businessName}&background=ff9500&color=fff`} alt={baker.businessName} className="w-full h-full object-cover" />
+                    </div>
+                    <div style={{ color: '#fff5e6', fontWeight: 600, fontSize: '0.85rem', marginBottom: '4px' }}>{baker.businessName}</div>
+                    <div style={{ color: '#ff9500aa', fontSize: '0.75rem' }}>{baker.city}</div>
+                    {baker.rating > 0 && <div style={{ color: '#ff9500', fontSize: '0.75rem', marginTop: '4px' }}>⭐ {baker.rating}</div>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Features */}
-      <section className="py-16 px-4">
+      <section className="py-16 px-4" style={{ background: '#0a0300' }}>
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -228,6 +238,7 @@ export default function HomePage() {
         <div style={{ color: '#ff9500', fontFamily: "'Georgia', serif", fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px' }}>🍽️ HomeFood</div>
         <p style={{ color: '#ff6b0055', fontSize: '0.85rem' }}>Connecting home chefs and bakers with food lovers. Made with ❤️</p>
       </footer>
+
     </div>
   );
 }
