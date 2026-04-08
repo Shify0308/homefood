@@ -82,9 +82,10 @@ export default function LoginPage() {
         }
       });
       if (credential) {
-        toast.success('Biometric verified! Logging you in...');
-        await performLogin(savedCredentials.email, savedCredentials.password, savedCredentials.tab || 'user', true);
-      }
+  toast.success('Biometric verified! Logging you in...');
+  const result = await performLogin(savedCredentials.email, savedCredentials.password, savedCredentials.tab || 'user', true);
+  navigateByRole(result.role);
+}
     } catch (err) {
       if (err.name === 'NotAllowedError') {
         toast.error('Biometric cancelled. Please login manually.');
