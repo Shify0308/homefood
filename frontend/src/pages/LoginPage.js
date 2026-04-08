@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [biometricLoading, setBiometricLoading] = useState(false);
   const [showSaveBiometric, setShowSaveBiometric] = useState(false);
   const [savedCredentials, setSavedCredentials] = useState(null);
+  const [pendingRole, setPendingRole] = useState(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -57,9 +58,15 @@ export default function LoginPage() {
     }
   };
 
+  const navigateByRole = (role) => {
+    if (role === 'admin') navigate('/admin/dashboard');
+    else if (role === 'seller') navigate('/seller/dashboard');
+    else navigate('/foods');
+  };
+
   const handleBiometricLogin = async () => {
     if (!savedCredentials) {
-      toast.error('No saved credentials. Please login manually first and enable biometrics.');
+      toast.error('No saved credentials. Please login manually first.');
       return;
     }
     setBiometricLoading(true);
@@ -75,11 +82,8 @@ export default function LoginPage() {
         }
       });
       if (credential) {
-        setEmail(savedCredentials.email);
-        setPassword(savedCredentials.password);
-        setTab(savedCredentials.tab || 'user');
         toast.success('Biometric verified! Logging you in...');
-        await performLogin(savedCredentials.email, savedCredentials.password, savedCredentials.tab || 'user');
+        await performLogin(savedCredentials.email, savedCredentials.password, savedCredentials.tab || 'user', true);
       }
     } catch (err) {
       if (err.name === 'NotAllowedError') {
@@ -95,16 +99,14 @@ export default function LoginPage() {
     }
   };
 
-  const performLogin = async (emailVal, passVal, tabVal) => {
+  const performLogin = async (emailVal, passVal, tabVal, skipBiometricPrompt = false) => {
     setLoading(true);
     try {
       const endpoint = tabVal === 'seller' ? '/api/auth/seller/login' : '/api/auth/login';
       const { data } = await axios.post(endpoint, { email: emailVal, password: passVal });
       login(data.user, data.token);
       toast.success(`Welcome back, ${data.user.name}!`);
-      if (data.user.role === 'admin') navigate('/admin/dashboard');
-      else if (data.user.role === 'seller') navigate('/seller/dashboard');
-      else navigate('/foods');
+      return { role: data.user.role };
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
       throw err;
@@ -116,9 +118,12 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await performLogin(email, password, tab);
+      const result = await performLogin(email, password, tab);
       if (biometricSupported && !savedCredentials) {
+        setPendingRole(result.role);
         setShowSaveBiometric(true);
+      } else {
+        navigateByRole(result.role);
       }
     } catch (err) {}
   };
@@ -144,9 +149,11 @@ export default function LoginPage() {
       });
       saveCredentials(email, password, tab);
       setShowSaveBiometric(false);
+      navigateByRole(pendingRole);
     } catch (err) {
       toast.error('Could not enable biometrics. Try again later.');
       setShowSaveBiometric(false);
+      navigateByRole(pendingRole);
     }
   };
 
@@ -258,7 +265,7 @@ export default function LoginPage() {
                 style={{ flex: 1, background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, cursor: 'pointer', fontSize: '0.95rem' }}>
                 Enable
               </button>
-              <button onClick={() => setShowSaveBiometric(false)}
+              <button onClick={() => { setShowSaveBiometric(false); navigateByRole(pendingRole); }}
                 style={{ flex: 1, background: 'transparent', border: '1px solid #ff6b0033', borderRadius: '14px', padding: '14px', color: '#ff9500aa', cursor: 'pointer', fontSize: '0.95rem' }}>
                 Skip
               </button>
