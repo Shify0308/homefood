@@ -8,7 +8,7 @@ import { ChefHat } from 'lucide-react';
 const inputStyle = { width: '100%', background: '#0f0500', border: '1px solid #ff6b0033', borderRadius: '12px', padding: '12px 14px', color: '#ffcca0', outline: 'none', fontSize: '0.95rem', boxSizing: 'border-box' };
 const labelStyle = { color: '#ffcca0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '8px' };
 
-export default function RegisterPage() {
+export function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', address: '' });
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -30,7 +30,7 @@ export default function RegisterPage() {
     <div style={{ background: '#0f0500', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
       <div style={{ width: '100%', maxWidth: '480px' }}>
         <div className="text-center mb-8">
-          <div style={{ background: 'linear-gradient(135deg, #ff6b00, #ff9500)', width: '64px', height: '64px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', boxShadow: '0 8px 32px #ff6b0044' }}>
+          <div style={{ background: 'linear-gradient(135deg, #ff6b00, #ff9500)', width: '64px', height: '64px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
             <ChefHat size={32} color="white" />
           </div>
           <h1 style={{ color: '#fff5e6', fontFamily: "'Georgia', serif", fontSize: '1.8rem', fontWeight: 700 }}>Create Account</h1>
@@ -43,7 +43,8 @@ export default function RegisterPage() {
               <input type={type} required value={form[key]} onChange={e => setForm({...form, [key]: e.target.value})} style={inputStyle} />
             </div>
           ))}
-          <button type="submit" disabled={loading} style={{ width: '100%', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '8px', opacity: loading ? 0.7 : 1 }}>
+          <button type="submit" disabled={loading}
+            style={{ width: '100%', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', marginTop: '8px', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
@@ -89,7 +90,6 @@ export function SellerRegisterPage() {
           <p style={{ color: '#ff9500aa', marginTop: '8px' }}>Register as Home Chef or Baker</p>
         </div>
         <form onSubmit={handleSubmit} style={{ background: '#1e0a00', border: '1px solid #ff6b0022', borderRadius: '20px', padding: '32px' }}>
-          {/* Type selector */}
           <div className="mb-4">
             <label style={labelStyle}>Seller Type</label>
             <div style={{ display: 'flex', gap: '12px' }}>
@@ -112,7 +112,8 @@ export function SellerRegisterPage() {
             <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])}
               style={{ ...inputStyle, padding: '10px 14px', color: '#ff9500aa' }} />
           </div>
-          <button type="submit" disabled={loading} style={{ width: '100%', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
+          <button type="submit" disabled={loading}
+            style={{ width: '100%', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Submitting...' : 'Submit Application'}
           </button>
           <p style={{ color: '#ff9500aa', fontSize: '0.8rem', textAlign: 'center', marginTop: '12px' }}>Your application will be reviewed by admin before activation.</p>
