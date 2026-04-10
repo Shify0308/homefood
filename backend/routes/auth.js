@@ -60,10 +60,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
     const token = generateToken(user._id, 'user');
-    res.json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email, role: 'user', phone: user.phone, address: user.address }
-    });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: 'user', phone: user.phone, address: user.address } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -79,14 +76,7 @@ router.post('/seller/login', async (req, res) => {
     const isMatch = await seller.comparePassword(password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
     const token = generateToken(seller._id, 'seller');
-    res.json({
-      token,
-      user: {
-        id: seller._id, name: seller.name, email: seller.email,
-        role: 'seller', businessName: seller.businessName,
-        type: seller.type, city: seller.city, profileImage: seller.profileImage
-      }
-    });
+    res.json({ token, user: { id: seller._id, name: seller.name, email: seller.email, role: 'seller', businessName: seller.businessName, type: seller.type, city: seller.city, profileImage: seller.profileImage } });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

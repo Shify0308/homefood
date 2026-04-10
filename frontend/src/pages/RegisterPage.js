@@ -22,8 +22,11 @@ export function RegisterPage() {
       login(data.user, data.token);
       toast.success('Account created!');
       navigate('/foods');
-    } catch (err) { toast.error(err.response?.data?.message || 'Registration failed'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,8 +78,11 @@ export function SellerRegisterPage() {
       await axios.post('/api/auth/seller/register', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
       toast.success('Registration submitted! Await admin approval.');
       navigate('/login');
-    } catch (err) { toast.error(err.response?.data?.message || 'Registration failed'); }
-    finally { setLoading(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -87,7 +93,6 @@ export function SellerRegisterPage() {
             <ChefHat size={32} color="white" />
           </div>
           <h1 style={{ color: '#fff5e6', fontFamily: "'Georgia', serif", fontSize: '1.8rem', fontWeight: 700 }}>Become a Seller</h1>
-          <p style={{ color: '#ff9500aa', marginTop: '8px' }}>Register as Home Chef or Baker</p>
         </div>
         <form onSubmit={handleSubmit} style={{ background: '#1e0a00', border: '1px solid #ff6b0022', borderRadius: '20px', padding: '32px' }}>
           <div className="mb-4">
@@ -101,7 +106,7 @@ export function SellerRegisterPage() {
               ))}
             </div>
           </div>
-          {[['name','Full Name','text'],['businessName','Business Name','text'],['email','Email','email'],['phone','Phone','tel'],['address','Full Address','text'],['city','City','text'],['fssai','FSSAI Number (Optional)','text'],['password','Password','password']].map(([key, label, type]) => (
+          {[['name','Full Name','text'],['businessName','Business Name','text'],['email','Email Address','email'],['phone','Phone Number','tel'],['address','Full Address','text'],['city','City','text'],['fssai','FSSAI Number (Optional)','text'],['password','Password','password']].map(([key, label, type]) => (
             <div key={key} className="mb-4">
               <label style={labelStyle}>{label}</label>
               <input type={type} required={key !== 'fssai'} value={form[key]} onChange={e => setForm({...form, [key]: e.target.value})} style={inputStyle} />
@@ -116,7 +121,6 @@ export function SellerRegisterPage() {
             style={{ width: '100%', background: 'linear-gradient(135deg, #ff6b00, #ff9500)', border: 'none', borderRadius: '14px', padding: '14px', color: 'white', fontWeight: 700, fontSize: '1rem', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Submitting...' : 'Submit Application'}
           </button>
-          <p style={{ color: '#ff9500aa', fontSize: '0.8rem', textAlign: 'center', marginTop: '12px' }}>Your application will be reviewed by admin before activation.</p>
         </form>
       </div>
     </div>
