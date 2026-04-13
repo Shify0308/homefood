@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://homefood-backend-cmnf.onrender.com/api/:path*"
+    }
+  ]
+}
